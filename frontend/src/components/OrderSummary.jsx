@@ -41,34 +41,20 @@ const stripePromise = loadStripe(
 		const formattedSavings = savings.toFixed(2);
 	  
 		const handlePayment = async () => {
-		  try {
-			// Create a new Stripe checkout session
-			const res = await axios.post("/payments/create-checkout-session", {
-			  products: cart,
-			  couponCode: coupon ? coupon.code : null,
-			});
-	  
-			// Verify that the session ID is valid and not expired
-			if (!res.data || !res.data.id) {
-			  throw new Error("Invalid checkout session");
+	try {
+		const res = await axios.post(
+			"/payments/create-checkout-session",
+			{
+				products: cart,
+				couponCode: coupon ? coupon.code : null,
 			}
-	  
-			const stripe = await stripePromise;
-			const session = res.data;
-	  
-			// Redirect to Stripe checkout page
-			const result = await stripe.redirectToCheckout({
-				sessionId: session.id,
-      });
+		);
 
-      if (result.error) {
-        console.error("Error:", result.error);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
+		window.location.href = res.data.url;
+	} catch (error) {
+		console.error("Error:", error);
+	}
+};
 	  
 
 	return (
